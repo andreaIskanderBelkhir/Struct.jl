@@ -255,7 +255,7 @@ end
 	struct2lar(structure::Struct)::Union{LAR,LARmodel}
 """
 function struct2lar(structure) # TODO: extend to true `LARmodels`
-	listOfModels = Lar.evalStruct(structure)
+	listOfModels = evalStruct(structure)
 	vertDict= Dict()
 	index,defaultValue = 0,0
 	W = Array{Float64,1}[]
