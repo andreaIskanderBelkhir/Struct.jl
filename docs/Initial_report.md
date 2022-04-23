@@ -8,9 +8,10 @@ Struct represent complex object and describe those object in they're coordinate 
 In the code Struct is used as a acyclic oriented graphs;
 an acyclic oriented graphs are a hierarchical structures formed by different component, and every component have they're different coordinate system
 
+
 ## Main interface
 
-A user wanting to use this library will use the 4 main interface :
+A user wanting to use this packege will make use of the 4 main interface :
 * Lar.Struct
 * Lar.apply
 * Lar.struct2lar
@@ -18,7 +19,7 @@ A user wanting to use this library will use the 4 main interface :
 
 The funcion Struct will create a object of type struct using as input an array of object.
 This funcion create a structure of geometrical object starting from an array of object.The attribute of a structure are <body,box,name,dim,category>. this funcion return a "Struct" type value and his coordinate system is based on the first object of the "struct" arguments.Also,
-the resulting geometrical value is often associated with a variable name.Every object in struct can be trasformed by a tensor wihtin its own container
+the resulting geometrical value is often associated with a variable name.Every object in struct can be trasformed by a tensor within its own container
 The generation of containers may continue hierarchically by suitably applying `Struct`.
 this funcion is implemented with 4 methods.
 
@@ -32,8 +33,8 @@ The funcion evalStruct return the world coordinate of the struct in input
 To help with the project we used 3 example taken from the **[LinearAlgebraicRepresentation.jl](https://github.com/cvdlab/LinearAlgebraicRepresentation.jl)** package. the examples were chosen to have different complexity . Its possible to find the chosen example in the folder /docs/examples.
 
 ## Start
-Before starting to improve the code, the work started with understanding the package struct as a whole, right after we started to study the singol funcion that compose struct.jl.
-Before starting to modify the code to optimaze the code, we decide thats better to improve the readabilty of the code using new funcion when possible for example the funcion <r(args...)> can use 2 more funcion one for  2D rotation and another for the 3D.
+Before starting to improve the code, the work started with understanding the package struct as a whole, right after we started to study the funcions that compose struct.jl.
+Before starting to optimaze the code, we decide thats better to improve the readabilty of the code using new funcion when possible for example the funcion <r(args...)> can use 2 more funcion one for  2D rotation and another for the 3D.
 
 ```julia
 function r(args...)
