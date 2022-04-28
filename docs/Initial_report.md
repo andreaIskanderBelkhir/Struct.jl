@@ -30,10 +30,10 @@ The funcion struct2lar return the struct given by input as his lar representatio
 The funcion evalStruct return the world coordinate of the struct in input
 
 ## Example
-To help with the project we used 3 example taken from the **[LinearAlgebraicRepresentation.jl](https://github.com/cvdlab/LinearAlgebraicRepresentation.jl)** package. the examples were chosen to have different complexity . Its possible to find the chosen example in the folder /docs/examples.
+To help with the project we used 3 example taken from the **[LinearAlgebraicRepresentation.jl](https://github.com/cvdlab/LinearAlgebraicRepresentation.jl)** package. the examples were chosen to have different complexity . Its possible to find the chosen example in the folder /docs/examples.Those example are used to test the entirety of the package,meanwhile for testing the singolar funcion we created some easyer example in the notebook of the specific funcion
 
 ## Start
-Before starting to improve the code, the work started with understanding the package struct as a whole, right after we started to study the funcions that compose struct.jl.
+Before starting to improve the code, the work started with understanding the package struct as a whole, right after we started to study the funcions that compose struct.jl dividing each funcion in a notebook and for each create some example to run the code and test it with the annotation @btime, @benchmark and @code_llvm (the last two annotation are not used in notebook with longer funcion for funcionability problem.
 Before starting to optimaze the code, we decide thats better to improve the readabilty of the code using new funcion when possible for example the funcion <r(args...)> can use 2 more funcion one for  2D rotation and another for the 3D.
 
 ```julia
@@ -51,5 +51,6 @@ end
 
 ```
 
+# Dependency Graph
 
- 
+ <img src="">
