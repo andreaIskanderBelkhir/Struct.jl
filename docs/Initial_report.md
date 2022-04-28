@@ -1,7 +1,7 @@
 # Initial Report : Struct
 ### Andrea Iskander Belkhir id : 511089
 ### Beyza Özdemir id : 576145
-
+### GitHub url : <a href="https://github.com/andreaIskanderBelkhir/Struct.jl" target="_top">https://github.com/andreaIskanderBelkhir/Struct.jl</a>
 ## Introduction
 struct is part of the julia library "LAR.jl".this library perform geometric calculations on cellular complexes expressed through the Linear Algebraic Representation (LAR).
 Struct represent complex object and describe those object in they're coordinate system, in this way we can specify the edges.
@@ -50,7 +50,9 @@ function r(args...)
 end
 
 ```
+<div style="page-break-after: always;"></div>
+
 
 # Dependency Graph
 
- <img src="">
+ <img src="https://github.com/andreaIskanderBelkhir/Struct.jl/blob/main/docs/graphviz.png?raw=true">
