@@ -37,8 +37,13 @@ To help with the project we used 3 example taken from the **[LinearAlgebraicRepr
 
 ## Start
 Before starting to improve the code, the work started with understanding the package struct as a whole, right after we started to study the funcions that compose struct.jl dividing each funcion in a notebook and for each create some example to run the code and test it with the annotation @btime, @benchmark and @code_llvm (the last two annotation are not used in notebook with longer funcion for funcionability problem.
-Before starting to optimaze the code, we decide thats better to improve the readabilty of the code using new funcion when possible for example the funcion <r(args...)> can use 2 more funcion one for  2D rotation and another for the 3D.
 
+
+## Optimization
+The optimization started with the study of the book recommended in class  "Julia High Performance - Second Edition - Optimizations, distributed computing, multithreading, and GPU programming with Julia 1.0 and beyond by Avik Sengupta" and with some topic found online for a better undestanding.
+
+### New funcion
+What we used for improving the code was at first creating new funcion when it was needed, for example for the funcion <r(args..)> we splitted the funcion in two and then call different funcion(then since the rotation 3D was splittable again we create more funcion).
 ```julia
 function r(args...)
  n = length(args)
@@ -53,9 +58,16 @@ function r(args...)
 end
 
 ```
+### Type 
+What did the most for the performance improvment was a good typing and the use of the package  <a href="https://github.com/JuliaArrays/StaticArrays.jl" target="_top">StaticArray.jl</a> and his type, an example of how much can one of this static array improve the code its written in the readme of the github page "The speed of *small* `SVector`s, `SMatrix`s and `SArray`s is often > 10 × faster
+than `Base.Array`"
+
+### Annotation 
+In The code we used different annotation that help with the optimization of the code, the annotation more used were `@inline` and `@inbound` both annotation are descrived in the reccomended book but we also used online topic to better learn when to use it. 
+
 <div style="page-break-after: always;"></div>
 
 
 
-![Dependency graph](./graphviz.png){ width=115% }
+![Dependency graph](./graphviz.png)
 
