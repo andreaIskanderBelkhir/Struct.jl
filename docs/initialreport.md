@@ -12,10 +12,13 @@ an acyclic oriented graphs are a hierarchical structures formed by different com
 ## Main interface
 
 A user wanting to use this packege will make use of the 4 main interface :
-* Lar.Struct
-* Lar.apply
-* Lar.struct2lar
-* Lar.evalStruct
+\begin{list}{*}{}
+\item Lar.Struct.
+\item Lar.Apply.
+\item Lar.Struct2lar.
+\item Lar.EvalStruct.
+\end{list}
+
 
 The funcion Struct will create a object of type struct using as input an array of object.
 This funcion create a structure of geometrical object starting from an array of object.The attribute of a structure are <body,box,name,dim,category>. this funcion return a "Struct" type value and his coordinate system is based on the first object of the "struct" arguments.Also,
@@ -53,6 +56,6 @@ end
 <div style="page-break-after: always;"></div>
 
 
-# Dependency Graph
 
- <img src="https://github.com/andreaIskanderBelkhir/Struct.jl/blob/main/docs/graphviz.png?raw=true">
+![Dependency graph](./graphviz.png){ width=115% }
+
