@@ -46,6 +46,9 @@ function  s(args...)
   return  mat
 end
 ```
-# Concurrent
+# Concurrent or Paralelism
+
+When we worked on the tasks we used both concurrent paradigm with the ```@async``` annotation and paralelism with the annotations ```@simd``` and ```Threads.@spawn``` and we tested with the package Benchmarktools to find the best performance.
+
 
 
