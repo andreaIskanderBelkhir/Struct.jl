@@ -16,6 +16,7 @@ What we did for this part of the project was the studies of tasks and an approac
 
 Since the base code hadn't any suggestion on what funcion where to apply some sorte of paralelization, we spent the first part on finding what funcions were  candidate to be paralelized.
 What we choose were the funcion:
+
 \begin{list}{*}{}
 
 \item S and T funcion.
