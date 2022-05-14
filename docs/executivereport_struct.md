@@ -50,33 +50,13 @@ end
 
 When we worked on the tasks we used both concurrent paradigm with the ```@async``` annotation and paralelism with the annotations ```@simd``` and ```Threads.@spawn``` and we tested with the package Benchmarktools to find the best performance.
 
-##Testing
+## Testing
 
 When we tested the funcions we saw improvmenton on three funcions but with the funcion <s(arg..)> and <t(arg..)> the paradigms returned worse performance compared to the ```@inbounds```. What we understand with the test of those two funcions is that not all funcion (mostly small funcions) need a paralelism approach.
 
-\begin{figure}
-     \centering
-     \begin{subfigure}[b]{0.3\textwidth}
-         \centering
-         \includegraphics[width=\textwidth]{graph1}
-         \caption{$y=x$}
-         \label{fig:y equals x}
-     \end{subfigure}
-     \hfill
-     \begin{subfigure}[b]{0.3\textwidth}
-         \centering
-         \includegraphics[width=\textwidth]{graph2}
-         \caption{$y=3sinx$}
-         \label{fig:three sin x}
-     \end{subfigure}
-     \hfill
-     \begin{subfigure}[b]{0.3\textwidth}
-         \centering
-         \includegraphics[width=\textwidth]{graph3}
-         \caption{$y=5/x$}
-         \label{fig:five over x}
-     \end{subfigure}
-        \caption{Three simple graphs}
-        \label{fig:three graphs}
-\end{figure}
+
+![s with inbounds](./s.png)
+![s with async](./sasync.png)
+![s with simd](./ssmid.png)
+![s with thread](./sthread.png)
 
