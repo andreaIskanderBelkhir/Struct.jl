@@ -55,7 +55,7 @@ When we worked on the tasks we used both concurrent paradigm with the ```@async`
 When we tested the funcions we saw improvmenton on three funcions but with the funcion <s(arg..)> and <t(arg..)> the paradigms returned worse performance compared to the ```@inbounds```. What we understand with the test of those two funcions is that not all funcion (mostly small funcions) need a paralelism approach.
 
 
-![s with inbounds](./s.png =250x100)
+![s with inbounds](./s.png)
 ![s with async](./sasync.png)
 ![s with simd](./ssmid.png)
 ![s with thread](./sthread.png)
