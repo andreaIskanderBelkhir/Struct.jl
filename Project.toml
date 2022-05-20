@@ -1,0 +1,10 @@
+name = "Struct"
+uuid = "534f59e1-c2de-4409-aef9-d984632ca71a"
+authors = ["andreaIskanderBelkhir andrea.belkhir@yahoo.it"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+LinearAlgebraicRepresentation = "95167b0c-186a-594b-a231-52369c6de044"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+ViewerGL = "32496ab8-9004-11e9-0205-c9e71bda7ab0"
