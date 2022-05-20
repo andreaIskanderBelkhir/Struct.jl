@@ -1,4 +1,4 @@
-
+using StaticArrays
 using LinearAlgebra
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
@@ -24,12 +24,12 @@ julia> Lar.t(1.,2,3)		# 3D translation
 ```
 """
 function t(args...)
-	d = length(args)
-	mat = Matrix{Float64}(LinearAlgebra.I, d+1, d+1)
-	for k in range(1, length=d)
-        	mat[k,d+1]=args[k]
-	end
-	return mat
+    d = length(args)
+    mat = MMatrix{d+1,d+1,Float64}(1I)
+    @inbounds for k in range(1, length=d)
+             mat[k,d+1]=args[k]
+    end
+    return mat
 end
 
 """
@@ -54,8 +54,8 @@ julia> Lar.s(2.,3.,4.)		# 3D scaling
 """
 function s(args...)
 	d = length(args)
-	mat = Matrix{Float64}(LinearAlgebra.I, d+1, d+1)
-	for k in range(1, length=d)
+	mat = MMatrix{d+1,d+1,Float64}(1I)
+    @inbounds for k in range(1, length=d)
 		mat[k,k]=args[k]
 	end
 	return mat
@@ -89,41 +89,77 @@ julia> Lar.r(1,1,1)		# 3D rotation about the ``x=y=z`` axis, with angle ``1.7320
   0.0        0.0        0.0       1.0
 ```
 """
-function r(args...)
-    args = collect(args)
-    n = length(args)
-    if n == 1 # rotation in 2D
-        angle = args[1]; COS = cos(angle); SIN = sin(angle)
-        mat = Matrix{Float64}(LinearAlgebra.I, 3, 3)
-        mat[1,1] = COS;    mat[1,2] = -SIN;
-        mat[2,1] = SIN;    mat[2,2] = COS;
-    end
 
-     if n == 3 # rotation in 3D
-        mat = Matrix{Float64}(LinearAlgebra.I, 4, 4)
-        angle = norm(args);
-        if norm(args) != 0.0
-			axis = args #normalize(args)
-			COS = cos(angle); SIN= sin(angle)
-			if axis[2]==axis[3]==0.0    # rotation about x
-				mat[2,2] = COS;    mat[2,3] = -SIN;
-				mat[3,2] = SIN;    mat[3,3] = COS;
-			elseif axis[1]==axis[3]==0.0   # rotation about y
-				mat[1,1] = COS;    mat[1,3] = SIN;
-				mat[3,1] = -SIN;    mat[3,3] = COS;
-			elseif axis[1]==axis[2]==0.0    # rotation about z
-				mat[1,1] = COS;    mat[1,2] = -SIN;
-				mat[2,1] = SIN;    mat[2,2] = COS;
-			else
-				I = Matrix{Float64}(LinearAlgebra.I, 3, 3); u = axis
-				Ux=[0 -u[3] u[2] ; u[3] 0 -u[1] ;  -u[2] u[1] 1]
-				UU =[u[1]*u[1]    u[1]*u[2]   u[1]*u[3];
-					 u[2]*u[1]    u[2]*u[2]   u[2]*u[3];
-					 u[3]*u[1]    u[3]*u[2]   u[3]*u[3]]
-				mat[1:3,1:3]=COS*I+SIN*Ux+(1.0-COS)*UU
-			end
-		end
+@inline function r(args...)
+   n = length(args)
+
+   if n == 1 # rotation in 2D
+	   mat = r2D(args)
+   end
+
+    if n == 3 # rotation in 3D
+       mat = r3D(args)
 	end
+	return mat
+end
+
+@inline function r2D(args)
+	angle = args[1]; COS = cos(angle); SIN = sin(angle)
+	mat = MMatrix{3,3,Float64}(1I)
+	mat[1,1] = COS;    mat[1,2] = -SIN;
+	mat[2,1] = SIN;    mat[2,2] = COS;
+	return mat
+end
+
+@inline function r3D(args)
+	mat =MMatrix{4,4,Float64}(1I)
+	angle = norm(args);
+	if angle != 0.0
+		 axis = args #normalize(args)
+		 COS = cos(angle); SIN= sin(angle)
+		 if axis[2]==axis[3]==0.0    # rotation about x
+			 mat = rX(mat,COS,SIN)
+		 elseif axis[1]==axis[3]==0.0   # rotation about y
+			 mat = rY(mat,COS,SIN)
+		 elseif axis[1]==axis[2]==0.0    # rotation about z
+			 mat = rZ(mat,COS,SIN)
+		 else
+			 mat = rAxis(mat,axis,COS,SIN)
+		 end
+	 end
+	 return mat
+end
+
+
+
+@inline function rX(mat,COS,SIN)
+	mat[2,2] = COS;    mat[2,3] = -SIN;
+	mat[3,2] = SIN;    mat[3,3] = COS;
+	return mat
+end
+
+
+
+@inline function rY(mat,COS,SIN)
+	mat[1,1] = COS;    mat[1,3] = SIN;
+	mat[3,1] = -SIN;    mat[3,3] = COS;
+	return mat
+end
+
+@inline function rZ(mat,COS,SIN)
+	mat[1,1] = COS;    mat[1,2] = -SIN;
+	mat[2,1] = SIN;    mat[2,2] = COS;
+	return mat
+end
+
+@inline @fastmath function rAxis(mat,axis,COS,SIN)
+	id = SMatrix{3,3,Float64}(1I); 
+    u = axis
+	Ux=[0 -u[3] u[2] ; u[3] 0 -u[1] ;  -u[2] u[1] 1]
+	UU =[u[1]*u[1]    u[1]*u[2]   u[1]*u[3];
+		 u[2]*u[1]    u[2]*u[2]   u[2]*u[3];
+		 u[3]*u[1]    u[3]*u[2]   u[3]*u[3]]
+	mat[1:3,1:3]=COS*id+SIN*Ux+(1.0-COS)*UU
 	return mat
 end
 
@@ -131,9 +167,15 @@ end
 	removeDups(CW::Cells)::Cells
 Remove dublicate `cells` from `Cells` object. Then put `Cells` in *canonical form*, i.e. with *sorted indices* of vertices in each (unique) `Cells` Array element.
 """
-function removeDups(CW::Lar.Cells)::Lar.Cells
+
+
+function removeDups(CW)
 	CW = collect(Set(CW))
-	CWs = collect(map(sort,CW))
+	sortCell(CW)
+end
+
+function sortCell(CW)
+    CWs = collect(map(sort!,CW))
 	return CWs
 end
 
@@ -254,21 +296,27 @@ end
 """
 	struct2lar(structure::Struct)::Union{LAR,LARmodel}
 """
-function struct2lar(structure) # TODO: extend to true `LARmodels`
-	listOfModels = evalStruct(structure)
-	vertDict= Dict()
-	index,defaultValue = 0,0
+function struct2lar(structure) 
+	larmodel,W = flat(Lar.evalStruct(structure))
+	append!(larmodel[1], W)
+	V = hcat(larmodel[1]...)
+	chains = [convert(Lar.Cells, chain) for chain in larmodel[2:end]]
+	return (V, chains...)
+end
+
+function flat(listOfModels)
 	W = Array{Float64,1}[]
 	m = length(listOfModels[1])
-	larmodel = [Array{Number,1}[] for k=1:m]
-
-	for model in listOfModels
+	larmodel = [Array{Float64,1}[] for k=1:m]
+	vertDict = Dict()
+	index,defaultValue = 0,0
+	@async for model in listOfModels
 		V = model[1]
-		for k=2:m
-			for incell in model[k]
+		Threads.@spawn for k=2:m
+			 @async for incell in model[k]
 				outcell=[]
-				for v in incell
-					key = map(Lar.approxVal(7), V[:,v])
+				  @async for v in incell
+					 key = map(Lar.approxVal(7), V[:,v])
 					if get(vertDict,key,defaultValue)==defaultValue
 						index += 1
 						vertDict[key]=index
@@ -282,116 +330,125 @@ function struct2lar(structure) # TODO: extend to true `LARmodels`
 			end
 		end
 	end
-
-	append!(larmodel[1], W)
-	V = hcat(larmodel[1]...)
-	chains = [convert(Lar.Cells, chain) for chain in larmodel[2:end]]
-	return (V, chains...)
+	return larmodel,W
 end
 
 """
 	embedTraversal(cloned::Struct,obj::Struct,n::Int,suffix::String)
-# TODO:  debug embedTraversal
+
 """
-function embedTraversal(cloned::Struct,obj::Struct,n::Int,suffix::String)
-	for i=1:length(obj.body)
-		if isa(obj.body[i],Matrix)
-			mat = obj.body[i]
-			d,d = size(mat)
-			newMat = Matrix{Float64}(LinearAlgebra.I, d+n, d+n)
-			for h in range(1, length=d)
-				for k in range(1, length=d)
-					newMat[h,k]=mat[h,k]
-				end
-			end
+@inline function embedTraversal(cloned::Lar.Struct,obj::Lar.Struct,n::Int,suffix::String)
+	objBody = obj.body
+	 Threads.@spawn for i=1:length(objBody)
+		if isa(objBody[i],Matrix)
+			newMat = traversalMatrix(objBody[i],n)
 			push!(cloned.body,[newMat])
-		elseif (isa(obj.body[i],Tuple) ||isa(obj.body[i],Array))&& length(obj.body[i])==3
-			V,FV,EV = deepcopy(obj.body[i])
-			dimadd = n
-			ncols = size(V,2)
-			nmat = zeros(dimadd,ncols)
-			V = [V;zeros(dimadd,ncols)]
-			push!(cloned.body,[(V,FV,EV)])
-		elseif  (isa(obj.body[i],Tuple) ||isa(obj.body[i],Array))&& length(obj.body[i])==2
-			V,EV = deepcopy(obj.body[i])
-			dimadd = n
-			ncols = size(V,2)
-			nmat = zeros(dimadd,ncols)
-			V = [V;zeros(dimadd,ncols)]
-			push!(cloned.body,[(V,EV)])
-		elseif isa(obj.body[i],Struct)
-			newObj = Struct()
-			newObj.box = [ [obj.body[i].box[1];zeros(dimadd)],
-							[obj.body[i].box[2];zeros(dimadd)] ]
-			newObj.category = (obj.body[i]).category
-			push!(cloned.body,[embedTraversal(newObj,obj.body[i],obj.dim+n,suffix)])
+		elseif (isa(objBody[i],Tuple) || isa(objBody[i],Array))
+			if (length(objBody[i])==3)
+				V,FV,EV = deepcopy(objBody[i])
+				V = traversalTupleOrArray(n,V)
+				push!(cloned.body,[(V,FV,EV)])
+			elseif (length(objBody[i])==2)
+				V,EV = deepcopy(objBody[i])
+				V = traversalTupleOrArray(n,V)
+				push!(cloned.body,[(V,EV)])
+			end
+		elseif isa(objBody[i],Struct)
+			newObj = traversalStruct(objBody)
+			push!(cloned.body,[embedTraversal(newObj,objBody[i],obj.dim+n,suffix)])
 		end
 	end
 	return cloned
 end
 
+@inline function traversalMatrix(objBody,n)
+	mat = objBody
+	d,d = size(mat)
+	newMat = Matrix{Float64}(LinearAlgebra.I, d+n, d+n)
+	  @inbounds for h in range(1, length=d)
+		@inbounds for k in range(1, length=d)
+			newMat[h,k]=mat[h,k]
+		end
+	end
+	return newMat
+end
+
+
 """
 	embedStruct(n::Int)(self::Struct,suffix::String="New")
-# TODO:  debug embedStruct
+
 """
-function embedStruct(n::Int)
-	function embedStruct0(self::Struct,suffix::String="New")
+
+
+function embedStruct(n)
+	function embedStruct0(self, suffix)
 		if n==0
 			return self, length(self.box[1])
 		end
-		cloned = Struct()
-		cloned.box = [ [self.body[i].box[1];zeros(dimadd)],
-						[self.body[i].box[2];zeros(dimadd)] ]
+		cloned = Lar.Struct()
+		cloned.box = hcat((self.box,[fill([0],n),fill([0],n)]))
 		cloned.name = self.name*suffix
 		cloned.category = self.category
 		cloned.dim = self.dim+n
-		cloned = embedTraversal(cloned,self,n,suffix)
+		cloned = Lar.embedTraversal(cloned,self,n,suffix)
 		return cloned
 	end
 	return embedStruct0
 end
 
+
+
 """
 	box(model)
 """
-function box(model)
+
+
+@inline function box(model)
 	if isa(model,Matrix)
 		return nothing
-	elseif isa(model,Struct)
-		listOfModels = evalStruct(model)
+	elseif isa(model,Lar.Struct)
+		listOfModels = Lar.evalStruct(model)
 		#dim = checkStruct(listOfModels)
 		if listOfModels == []
 			return model.box
 		else
-			theMin,theMax = box(listOfModels[1])
-			for theModel in listOfModels[2:end]
-				modelMin,modelMax= box(theModel)
-				for (k,val) in enumerate(modelMin)
-					if val < theMin[k]
-						theMin[k]=val
-					end
-				end
-				for (k,val) in enumerate(modelMax)
-					if val > theMax[k]
-						theMax[k]=val
-					end
-				end
-			end
+			theMin,theMax = evalBox(listOfModels)
 		end
+        
 		return [theMin,theMax]
 
-	elseif (isa(model,Tuple) ||isa(model,Array))&& (length(model)>=2)
+	elseif (isa(model,Tuple) || isa(model,Array)) && (length(model)>=2)
 		V = model[1]
 		theMin = minimum(V, dims=2)
 		theMax = maximum(V, dims=2)
 	end
-
+    
 	return [theMin,theMax]
+end
+
+@inline function evalBox(listOfModels)
+	theMin,theMax = box(listOfModels[1])
+	for theModel in listOfModels[2:end]
+		modelMin,modelMax= box(theModel)
+		for (k,val) in enumerate(modelMin)
+			if val < theMin[k]
+				theMin[k]=val
+			end
+		end
+		for (k,val) in enumerate(modelMax)
+			if val > theMax[k]
+				theMax[k]=val
+			end
+		end
+	end
+	return theMin,theMax
 end
 
 """
 	apply(affineMatrix::Array{Float64,2}, larmodel::Union{LAR,LARmodel})
 """
+
+
 function apply(affineMatrix, larmodel)
 	data = collect(larmodel)
 	V = data[1]
@@ -406,17 +463,19 @@ function apply(affineMatrix, larmodel)
 end
 
 
+
+
 """
 	checkStruct(lst)
 """
 function checkStruct(lst)
 	obj = lst[1]
-	if isa(obj,Matrix)
+	if (isa(obj,MMatrix) || isa(obj,Matrix))
 		dim = size(obj,1)-1
 	elseif (isa(obj,Tuple) || isa(obj,Array))
-		dim = length(obj[1][:,1])
+		dim = length(@view (obj[1][:,1]))
 
-	elseif isa(obj,Struct)
+	elseif isa(obj,Lar.Struct)
 		dim = length(obj.box[1])
 	end
 	return dim
@@ -425,31 +484,33 @@ end
 """
 	traversal(CTM,stack,obj,scene=[])
 """
-function traversal(CTM::Matrix, stack, obj, scene=[])
-	for i = 1:length(obj.body)
-		if isa(obj.body[i],Matrix)
+
+
+function traversal(CTM::Matrix, stack, obj, scene)
+	@inbounds @async for i in 1:length(obj.body)
+		if (isa(obj.body[i],MMatrix) || isa(obj.body[i],Matrix))
 			CTM = CTM*obj.body[i]
-		elseif (isa(obj.body[i],Tuple) || isa(obj.body[i],Array)) &&
-			(length(obj.body[i])>=2)
-			l = apply(CTM, obj.body[i])
+		elseif (isa(obj.body[i],Tuple) || isa(obj.body[i],Array)) && (length(obj.body[i])>=2)
+			l = Lar.apply(CTM, obj.body[i])
 			push!(scene,l)
-		elseif isa(obj.body[i],Struct)
+		elseif isa(obj.body[i],Lar.Struct)
 			push!(stack,CTM)
-			traversal(CTM,stack,obj.body[i],scene)
+			Lar.traversal(CTM,stack,obj.body[i],scene)
 			CTM = pop!(stack)
 		end
 	end
 	return scene
 end
 
+
+
 """
 	evalStruct(self)
 """
-function evalStruct(self::Struct)
-	dim = checkStruct(self.body)
-   	CTM, stack = Matrix{Float64}(LinearAlgebra.I, dim+1, dim+1), []
-   	scene = traversal(CTM, stack, self, [])
-	return scene
+function evalStruct(self)
+	d::Int = Lar.checkStruct(self.body)
+	CTM = Matrix{Float64}(LinearAlgebra.I, d+1, d+1)
+	return Lar.traversal(CTM, [], self, [])
 end
 
    
