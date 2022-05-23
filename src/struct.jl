@@ -1,3 +1,5 @@
+module Struct
+
 using StaticArrays
 using LinearAlgebra
 using LinearAlgebraicRepresentation
@@ -512,5 +514,8 @@ function evalStruct(self)
 	CTM = Matrix{Float64}(LinearAlgebra.I, d+1, d+1)
 	return Lar.traversal(CTM, [], self, [])
 end
+
+end
+
 
    
