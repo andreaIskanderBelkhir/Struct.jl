@@ -230,7 +230,7 @@ mutable struct Struct
 
 	function Struct(data::Array)
 		self = Struct()
-		self.body = data
+		self.body = [item for item in data]
 		self.box = box(self)
 		self.dim = length(self.box[1])
 		return self
@@ -362,6 +362,40 @@ end
 	return cloned
 end
 
+
+
+@inline function traversalStruct(objBody)
+	newObj = Struct()
+	newObj.box = [ [objBody[i].box[1];zeros(dimadd)],  [objBody[i].box[2];zeros(dimadd)] ]
+	newObj.category = (objBody[i]).category
+	return newObj
+end
+
+
+
+@inline function traversalTupleOrArray(n,V)
+	dimadd = n
+	ncols = size(V,2)
+	nmat = zeros(dimadd,ncols)
+	V = [V;nmat]
+	return V
+end
+
+
+
+@inline function traversalMatrix(objBody,n)
+	mat = objBody
+	d,d = size(mat)
+	newMat = Matrix{Float64}(LinearAlgebra.I, d+n, d+n)
+	  for h in range(1, length=d)
+		 for k in range(1, length=d)
+			newMat[h,k]=mat[h,k]
+		end
+	end
+	return newMat
+end
+
+
 @inline function traversalMatrix(objBody,n)
 	mat = objBody
 	d,d = size(mat)
@@ -391,7 +425,7 @@ function embedStruct(n)
 		cloned.name = self.name*suffix
 		cloned.category = self.category
 		cloned.dim = self.dim+n
-		cloned = Lar.embedTraversal(cloned,self,n,suffix)
+		cloned = embedTraversal(cloned,self,n,suffix)
 		return cloned
 	end
 	return embedStruct0
@@ -413,10 +447,8 @@ end
 		if listOfModels == []
 			return model.box
 		else
-			theMin,theMax = evalBox(listOfModels)
+			return evalBox(listOfModels)
 		end
-        
-		return [theMin,theMax]
 
 	elseif (isa(model,Tuple) || isa(model,Array)) && (length(model)>=2)
 		V = model[1]
@@ -428,7 +460,7 @@ end
 end
 
 @inline function evalBox(listOfModels)
-	(theMin,theMax) = box(listOfModels[1])
+	theMin,theMax = box(listOfModels[1])
 	for theModel in listOfModels[2:end]
 		modelMin,modelMax= box(theModel)
 		@async @inbounds for (k,val) in enumerate(modelMin)
@@ -492,11 +524,11 @@ function traversal(CTM::Matrix, stack, obj, scene)
 		if (isa(obj.body[i],MMatrix) || isa(obj.body[i],Matrix))
 			CTM = CTM*obj.body[i]
 		elseif (isa(obj.body[i],Tuple) || isa(obj.body[i],Array)) && (length(obj.body[i])>=2)
-			l = Lar.apply(CTM, obj.body[i])
+			l = apply(CTM, obj.body[i])
 			push!(scene,l)
 		elseif isa(obj.body[i],Lar.Struct)
 			push!(stack,CTM)
-			Lar.traversal(CTM,stack,obj.body[i],scene)
+			traversal(CTM,stack,obj.body[i],scene)
 			CTM = pop!(stack)
 		end
 	end
@@ -509,9 +541,9 @@ end
 	evalStruct(self)
 """
 function evalStruct(self)
-	d::Int = Lar.checkStruct(self.body)
+	d::Int = checkStruct(self.body)
 	CTM = Matrix{Float64}(LinearAlgebra.I, d+1, d+1)
-	return Lar.traversal(CTM, [], self, [])
+	return traversal(CTM, [], self, [])
 end
 
 
