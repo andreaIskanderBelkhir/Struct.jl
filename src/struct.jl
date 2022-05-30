@@ -1,4 +1,3 @@
-module Struct
 
 using StaticArrays
 using LinearAlgebra
@@ -406,7 +405,7 @@ end
 
 
 @inline function box(model)
-	if isa(model,Matrix)
+	if (isa(model,MMatrix) || isa(model,Matrix))
 		return nothing
 	elseif isa(model,Lar.Struct)
 		listOfModels = Lar.evalStruct(model)
@@ -429,15 +428,15 @@ end
 end
 
 @inline function evalBox(listOfModels)
-	theMin,theMax = box(listOfModels[1])
+	(theMin,theMax) = box(listOfModels[1])
 	for theModel in listOfModels[2:end]
 		modelMin,modelMax= box(theModel)
-		for (k,val) in enumerate(modelMin)
+		@async @inbounds for (k,val) in enumerate(modelMin)
 			if val < theMin[k]
 				theMin[k]=val
 			end
 		end
-		for (k,val) in enumerate(modelMax)
+		@async @inbounds for (k,val) in enumerate(modelMax)
 			if val > theMax[k]
 				theMax[k]=val
 			end
@@ -515,7 +514,6 @@ function evalStruct(self)
 	return Lar.traversal(CTM, [], self, [])
 end
 
-end
 
 
    
