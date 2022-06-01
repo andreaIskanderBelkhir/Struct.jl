@@ -311,7 +311,7 @@ end
 	struct2lar(structure::Struct)::Union{LAR,LARmodel}
 """
 function struct2lar(structure) 
-	larmodel,W = flat(Lar.evalStruct(structure))
+	larmodel,W = flat(evalStruct(structure))
 	append!(larmodel[1], W)
 	V = hcat(larmodel[1]...)
 	chains = [convert(Lar.Cells, chain) for chain in larmodel[2:end]]
@@ -454,8 +454,8 @@ end
 @inline function box(model)
 	if (isa(model,MMatrix) || isa(model,Matrix))
 		return nothing
-	elseif isa(model,Lar.Struct)
-		listOfModels = Lar.evalStruct(model)
+	elseif isa(model,Struct)
+		listOfModels = evalStruct(model)
 		#dim = checkStruct(listOfModels)
 		if listOfModels == []
 			return model.box
