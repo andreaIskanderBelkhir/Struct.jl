@@ -1,6 +1,8 @@
 # struct.jl Documentation
 ###  Andrea Iskander Belkhir id : 511089
-###  Beyza Özdemir id : 576145"
+###  Beyza Özdemir id : 576145
+
+struct is part of the julia library "LinearAlgebraicRepresentation.jl".this library perform geometric calculations on cellular complexes expressed through the Linear Algebraic Representation (LAR). Struct represent complex object and describe those object in they're coordinate system, in this way we can specify the edges. In the code Struct is used as a acyclic oriented graphs; an acyclic oriented graphs are a hierarchical structures formed by different component, and every component have they're different coordinate system.
 
 ```@docs
 t(args::Array{Number,1}...)::Matrix
@@ -14,7 +16,7 @@ it generate (and return)a scaling matrix. the returned matrix have d+1 row and c
 ```
 
 ```@docs
-	r(args...)
+r(args...)
 Return an *affine transformation Matrix* in homogeneous coordinates. Such `Rotation` Matrix has *dimension* either equal to 3 or to 4, for 2D and 3D rotation, respectively.
 The `{Number,1}` of `args` either contain a single `angle` parameter in *radiants*, or a vector with three elements, whose `norm` is the *rotation angle* in 3D and whose `normalized value` gives the direction of the *rotation axis* in 3D.
 ```
@@ -87,5 +89,3 @@ evaluete the struct in input,iniziate the ctm matrix with the dimension of (dime
 
 ```
 
-
-```
