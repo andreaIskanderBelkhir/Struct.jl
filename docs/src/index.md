@@ -6,7 +6,7 @@ struct is part of the julia library "LinearAlgebraicRepresentation.jl".this libr
 
 ```@docs
 t(args::Array{Number,1}...)::Matrix
-Return an *affine transformation Matrix* in homogeneous coordinates. Such `translation` Matrix has ``d+1`` rows and ``d+1`` columns, where ``d`` is the number of translation parameters in the `args` array.
+Return an affine transformation Matrix in homogeneous coordinates. Such `translation` Matrix has ``d+1`` rows and ``d+1`` columns, where ``d`` is the number of translation parameters in the `args` array.
 ```
 
 
@@ -17,8 +17,8 @@ it generate (and return)a scaling matrix. the returned matrix have d+1 row and c
 
 ```@docs
 r(args...)
-Return an *affine transformation Matrix* in homogeneous coordinates. Such `Rotation` Matrix has *dimension* either equal to 3 or to 4, for 2D and 3D rotation, respectively.
-The `{Number,1}` of `args` either contain a single `angle` parameter in *radiants*, or a vector with three elements, whose `norm` is the *rotation angle* in 3D and whose `normalized value` gives the direction of the *rotation axis* in 3D.
+Return an affine transformation Matrix in homogeneous coordinates. Such `Rotation` Matrix has *dimension* either equal to 3 or to 4, for 2D and 3D rotation, respectively.
+The `{Number,1}` of `args` either contain a single `angle` parameter in radiants, or a vector with three elements, whose `norm` is the rotation angle in 3D and whose `normalized value` gives the direction of the rotation axis in 3D.
 ```
 
 
@@ -29,12 +29,12 @@ Remove dublicate `cells` from `Cells` object. Then put `Cells` in *canonical for
 
 ```@docs
 Struct
-A *container* of geometrical objects is defined by applying the function `Struct` to
+A container of geometrical objects is defined by applying the function `Struct` to
 the array of contained objects. Each value is defined in local coordinates and may be transformed by affine transformation tensors.
 The value returned from the application of `Struct` to an `Array{Any, 1}` of `LAR` values, `matrices`, and `Struct` values is a value of
 `Struct type`.  The coordinate system of this value is the one associated with the first object of the `Struct` arguments.  Also,
 the resulting geometrical value is often associated with a variable name.
-The generation of containers may continue hierarchically by suitably applying `Struct`. Notice that each LAR object in a `Struct` container is transformed by each matrix before it *within the container*, going from right to left. The action of a transformation (tensor) extends to each object on its right within its own container. Whereas,  the action of a tensor does not extend outside its container, according to the semantics of *PHIGS* structures.
+The generation of containers may continue hierarchically by suitably applying `Struct`. Notice that each LAR object in a `Struct` container is transformed by each matrix before it within the container, going from right to left. The action of a transformation (tensor) extends to each object on its right within its own container. Whereas,  the action of a tensor does not extend outside its container, according to the semantics of PHIGS structures.
 ```
 
 ```@docs

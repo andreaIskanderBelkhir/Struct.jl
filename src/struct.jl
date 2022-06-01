@@ -324,7 +324,7 @@ function flat(listOfModels)
 	larmodel = [Array{Float64,1}[] for k=1:m]
 	vertDict = Dict()
 	index,defaultValue = 0,0
-	@async for model in listOfModels
+	@async @inbounds for model in listOfModels
 		V = model[1]
 		Threads.@spawn for k=2:m
 			 @async for incell in model[k]
@@ -521,7 +521,7 @@ function checkStruct(lst)
 	elseif (isa(obj,Tuple) || isa(obj,Array))
 		dim = length(@view (obj[1][:,1]))
 
-	elseif isa(obj,Lar.Struct)
+	elseif isa(obj,Struct)
 		dim = length(obj.box[1])
 	end
 	return dim
@@ -539,7 +539,7 @@ function traversal(CTM::Matrix, stack, obj, scene)
 		elseif (isa(obj.body[i],Tuple) || isa(obj.body[i],Array)) && (length(obj.body[i])>=2)
 			l = apply(CTM, obj.body[i])
 			push!(scene,l)
-		elseif isa(obj.body[i],Lar.Struct)
+		elseif isa(obj.body[i],Struct)
 			push!(stack,CTM)
 			traversal(CTM,stack,obj.body[i],scene)
 			CTM = pop!(stack)
