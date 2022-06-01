@@ -1,4 +1,4 @@
-module Struct
+
 using StaticArrays
 using LinearAlgebra
 using LinearAlgebraicRepresentation
@@ -226,7 +226,7 @@ mutable struct Struct
 	category::AbstractString
 
 	function Struct()
-		self = new([],Any,"new",Any,"feature")
+		self = new([],Any,"new",Any,"fboxeature")
 		self.name = string(objectid(self))
 		return self
 
@@ -235,24 +235,24 @@ mutable struct Struct
 	function Struct(data::Array)
 		self = Struct()
 		self.body = [item for item in data]
-		self.box = box(self)
+		self.box = boxfuncion(self)
 		self.dim = length(self.box[1])
 		return self
 	end
 
 	#struct no array version
-	function Struct(args...)
-		self = Struct()
-		self.body=[item for item in args]
-		self.box = box(self)
-		self.dim = length(self.box[1])
-		return self
-	end
+	#function Struct(args...)
+	#	self = Struct()
+	#	self.body=[item for item in args]
+	#	self.box = boxfuncion(self)
+	#	self.dim = length(self.box[1])
+	#	return self
+	#end
 
 	function Struct(data::Array,name)
 		self = Struct()
 		self.body=[item for item in data]
-		self.box = box(self)
+		self.box = boxfuncion(self)
 		self.dim = length(self.box[1])
 		self.name = string(name)
 		return self
@@ -261,7 +261,7 @@ mutable struct Struct
 	function Struct(data::Array,name,category)
 		self = Struct()
 		self.body = [item for item in data]
-		self.box = box(self)
+		self.box = boxfuncion(self)
 		self.dim = length(self.box[1])
 		self.name = string(name)
 		self.category = string(category)
@@ -311,7 +311,8 @@ end
 	struct2lar(structure::Struct)::Union{LAR,LARmodel}
 """
 function struct2lar(structure) 
-	larmodel,W = flat(evalStruct(structure))
+	listOfModels = evalStruct(structure)
+	larmodel,W = flat(listOfModels)
 	append!(larmodel[1], W)
 	V = hcat(larmodel[1]...)
 	chains = [convert(Lar.Cells, chain) for chain in larmodel[2:end]]
@@ -447,11 +448,11 @@ end
 
 
 """
-	box(model)
+	boxfuncion(model)
 """
 
 
-@inline function box(model)
+@inline function boxfuncion(model)
 	if (isa(model,MMatrix) || isa(model,Matrix))
 		return nothing
 	elseif isa(model,Struct)
@@ -473,9 +474,9 @@ end
 end
 
 @inline function evalBox(listOfModels)
-	theMin,theMax = box(listOfModels[1])
+	theMin,theMax = boxfuncion(listOfModels[1])
 	for theModel in listOfModels[2:end]
-		modelMin,modelMax= box(theModel)
+		modelMin,modelMax= boxfuncion(theModel)
 		@async @inbounds for (k,val) in enumerate(modelMin)
 			if val < theMin[k]
 				theMin[k]=val
@@ -487,7 +488,7 @@ end
 			end
 		end
 	end
-	return theMin,theMax
+	return [theMin,theMax]
 end
 
 """
@@ -553,12 +554,11 @@ end
 """
 	evalStruct(self)
 """
-function evalStruct(self)
+function evalStruct(self::Struct)
 	d::Int = checkStruct(self.body)
-	CTM = Matrix{Float64}(LinearAlgebra.I, d+1, d+1)
-	return traversal(CTM, [], self, [])
+	CTM,stack= Matrix{Float64}(LinearAlgebra.I, d+1, d+1),[]
+	return traversal(CTM, stack, self, [])
 end
 
-end
 
    
