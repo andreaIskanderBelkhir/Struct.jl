@@ -4,6 +4,10 @@ using LinearAlgebra
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
+
+#  Andrea Iskander Belkhir id : 511089
+
+#  Beyza Özdemir id : 576145
 """
 	t(args::Array{Number,1}...)::Matrix
 Return an *affine transformation Matrix* in homogeneous coordinates. Such `translation` Matrix has ``d+1`` rows and ``d+1`` columns, where ``d`` is the number of translation parameters in the `args` array.
@@ -231,6 +235,15 @@ mutable struct Struct
 	function Struct(data::Array)
 		self = Struct()
 		self.body = [item for item in data]
+		self.box = box(self)
+		self.dim = length(self.box[1])
+		return self
+	end
+
+	#struct no array version
+	function Struct(args...)
+		self = Struct()
+		self.body=[item for item in args]
 		self.box = box(self)
 		self.dim = length(self.box[1])
 		return self

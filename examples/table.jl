@@ -4,7 +4,8 @@ Lar = LinearAlgebraicRepresentation
 GL = ViewerGL
 
 cube = apply( t(-0.5,-0.5,0), Lar.cuboid([1,1,1]))
-tableTop = Struct([ t(0,0,.85), s(1,1,0.05), cube ])
+
+tableTop = Struct([ t(0,0,.85),s(1,1,0.05), cube ])
 tableLeg = Struct([ t(-.475,-.475,0), s(.1,.1,.89), cube ])
 tablelegs = Struct( repeat([ tableLeg, r(0,0,pi/2) ],outer=4) )
 table = Struct([ tableTop, tablelegs ])
