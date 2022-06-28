@@ -234,7 +234,7 @@ mutable struct Struct
 
 	function Struct(data::Array)
 		self = Struct()
-		self.body = [item for item in data]
+		self.body = data
 		self.box = boxfuncion(self)
 		self.dim = length(self.box[1])
 		return self
